@@ -1763,6 +1763,10 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
 //
 //
 //
@@ -1784,23 +1788,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
-    return {
+    return _defineProperty({
       description: '',
-      errors: []
-    };
+      errors: [],
+      file: null
+    }, "errors", []);
   },
   methods: {
     NewThought: function NewThought() {
       var _this = this;
 
-      var params = {
-        description: this.description
-      };
-      this.description = '';
-      axios.post('/thoughts', params).then(function (response) {
+      var data = new FormData();
+      data.append('file', document.getElementById('file').files[0]);
+      data.append('description', this.description);
+      axios.post('/thoughts', data).then(function (response) {
         var thought = response.data;
 
         _this.$emit('new', thought);
+
+        _this.description = '';
+        _this.errors = [];
+        _this.file = null;
+      }).catch(function (error) {
+        console.log(error.response);
+        _this.errors = error.response.data.errors;
       });
     }
   },
@@ -1894,6 +1905,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['thought'],
   data: function data() {
@@ -1905,6 +1917,9 @@ __webpack_require__.r(__webpack_exports__);
     console.log('Component mounted.');
   },
   methods: {
+    getfile: function getfile() {
+      return 'storage/' + this.thought.file;
+    },
     onClickDelete: function onClickDelete() {
       var _this = this;
 
@@ -36798,7 +36813,7 @@ var render = function() {
       _c(
         "form",
         {
-          attrs: { action: "" },
+          attrs: { action: "", enctype: "multipart/form-data" },
           on: {
             submit: function($event) {
               $event.preventDefault()
@@ -36832,6 +36847,17 @@ var render = function() {
                   _vm.description = $event.target.value
                 }
               }
+            }),
+            _vm._v(" "),
+            _vm.errors.description
+              ? _c("span", { staticClass: "text-danger" }, [
+                  _vm._v(_vm._s(_vm.errors.description))
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "form-control",
+              attrs: { type: "file", name: "file", id: "file" }
             })
           ]),
           _vm._v(" "),
@@ -36927,6 +36953,10 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "card-body" }, [
+      _vm.thought.file
+        ? _c("img", { attrs: { src: _vm.getfile() } })
+        : _vm._e(),
+      _vm._v(" "),
       _vm.editMode
         ? _c("input", {
             directives: [

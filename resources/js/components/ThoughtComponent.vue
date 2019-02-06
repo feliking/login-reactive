@@ -3,6 +3,7 @@
     <div class="card-header">Publicado en {{ thought.created_at}}</div>
 
     <div class="card-body">
+        <img :src="getfile()" v-if="thought.file">
         <input v-if="editMode" type="text" class="form-control" v-model="thought.description">
         <p v-else>{{ thought.description }}</p>
         
@@ -33,6 +34,9 @@
             console.log('Component mounted.')
         },
         methods:{
+            getfile(){
+                return 'storage/'+this.thought.file;
+            },
             onClickDelete(){
                 axios.delete('/thoughts/'+this.thought.id).then(() => {
                     this.$emit('delete');

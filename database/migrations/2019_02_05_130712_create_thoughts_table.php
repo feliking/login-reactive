@@ -16,6 +16,7 @@ class CreateThoughtsTable extends Migration
         Schema::create('thoughts', function (Blueprint $table) {
             $table->increments('id');
             $table->string('description');
+            $table->string('file')->nullable();
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();

@@ -29,8 +29,24 @@ class ThoughtController extends Controller
      */
     public function store(Request $request)
     {
+        $rules = [
+            'description' => 'required|unique:thoughts'
+        ];
+        $messages = [
+            'description.required' => 'Este campo es obligatorio',
+            'description.unique' => 'ya existe este campo'
+        ];
+        $this->validate($request, $rules, $messages);
+        if ($request->hasFile('file')) {
+            $image = $request->file('file');
+            $file = $image->store('messages', 'public');
+        }
+        else{
+            $file = '';
+        }
         $thought = new Thought();
         $thought->description = $request->description;
+        $thought->file = $file;
         $thought->user_id = auth()->id();
         $thought->save();
         return $thought;
